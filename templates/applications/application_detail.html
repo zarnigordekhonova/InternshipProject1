@@ -1,0 +1,219 @@
+{% load static %}
+
+{% block title %}Ariza tafsilotlari{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <!-- Header with status badge -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Ariza tafsilotlari</h2>
+                <div>
+                    {% if application.status == 'draft' %}
+                        <span class="badge bg-secondary fs-5">Qoralama</span>
+                    {% elif application.status == 'pending' %}
+                        <span class="badge bg-warning fs-5">Ko'rib chiqilmoqda</span>
+                    {% elif application.status == 'approved' %}
+                        <span class="badge bg-success fs-5">Tasdiqlangan</span>
+                    {% elif application.status == 'rejected' %}
+                        <span class="badge bg-danger fs-5">Rad etilgan</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Registration Number (if submitted) -->
+            {% if application.registration_number %}
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-check-circle"></i> Ro'yxatga olish raqami</h5>
+                    <h3 class="mb-0">{{ application.registration_number }}</h3>
+                    <small class="text-muted">Yuborilgan sana: {{ application.updated_at|date:"d.m.Y H:i" }}</small>
+                </div>
+            {% endif %}
+
+            <!-- Personal Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-person"></i> Shaxsiy ma'lumotlar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>F.I.O:</strong></div>
+                        <div class="col-md-9">
+                            {{ application.first_name }} {{ application.last_name }} {{ application.paternal_name }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>Manzil:</strong></div>
+                        <div class="col-md-9">{{ application.full_address }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>Ish joyi:</strong></div>
+                        <div class="col-md-9">{{ application.work_place }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>Telefon:</strong></div>
+                        <div class="col-md-9">{{ application.phone_number }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>E-pochta:</strong></div>
+                        <div class="col-md-9">{{ application.email }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-3"><strong>Hujjat turi:</strong></div>
+                        <div class="col-md-9">{{ application.document_type }}</div>
+                    </div>
+                    {% if application.document_file %}
+                        <div class="row mb-2">
+                            <div class="col-md-3"><strong>Hujjat fayli:</strong></div>
+                            <div class="col-md-9">
+                                <a href="{{ application.document_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i> Yuklab olish
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Branch Information -->
+            {% if application_branch %}
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-building"></i> Filial ma'lumotlari</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3"><strong>Filial:</strong></div>
+                            <div class="col-md-9">
+                                <h6>{{ application_branch.branch.name }}</h6>
+                                <small class="text-muted">{{ application_branch.branch.address }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Specialties -->
+                        <div class="row mb-3">
+                            <div class="col-md-3"><strong>Ixtisoslik turlari:</strong></div>
+                            <div class="col-md-9">
+                                {% for specialty in application_branch.specialties.all %}
+                                    <span class="badge bg-info me-1 mb-1">{{ specialty.name }}</span>
+                                {% empty %}
+                                    <span class="text-muted">Tanlanmagan</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Specialists -->
+                        {% if application_branch.selected_specialists.exists %}
+                            <div class="row mb-3">
+                                <div class="col-md-3"><strong>Mutaxassislar:</strong></div>
+                                <div class="col-md-9">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for specialist in application_branch.selected_specialists.all %}
+                                            <li>
+                                                <i class="bi bi-person-check text-success"></i>
+                                                {{ specialist.first_name }} {{ specialist.last_name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Equipment -->
+                        {% if application_branch.selected_equipment.exists %}
+                            <div class="row mb-3">
+                                <div class="col-md-3"><strong>Texnika va jihozlar:</strong></div>
+                                <div class="col-md-9">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for equipment in application_branch.selected_equipment.all %}
+                                            <li>
+                                                <i class="bi bi-gear text-primary"></i>
+                                                {{ equipment.name }}
+                                                {% if equipment.description %}
+                                                    <small class="text-muted">({{ equipment.description }})</small>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Timeline / History -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="bi bi-clock-history"></i> Tarix</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <i class="bi bi-circle-fill text-success"></i>
+                            <strong>Yaratildi:</strong> {{ application.created_at|date:"d.m.Y H:i" }}
+                        </div>
+                        {% if application.updated_at != application.created_at %}
+                            <div class="timeline-item mt-2">
+                                <i class="bi bi-circle-fill text-warning"></i>
+                                <strong>Oxirgi o'zgarish:</strong> {{ application.updated_at|date:"d.m.Y H:i" }}
+                            </div>
+                        {% endif %}
+                        {% if application.status != 'draft' %}
+                            <div class="timeline-item mt-2">
+                                <i class="bi bi-circle-fill text-primary"></i>
+                                <strong>Yuborildi:</strong> {{ application.updated_at|date:"d.m.Y H:i" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mb-4">
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Orqaga
+                </a>
+                
+                {% if application.status == 'draft' %}
+                    <div>
+                        <a href="{% url 'applications:application_update' application.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Tahrirlash
+                        </a>
+                        <form method="post" action="{% url 'application_submit' application.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success" 
+                                    onclick="return confirm('Arizani yuborishni tasdiqlaysizmi? Yuborilgandan keyin tahrirlash mumkin bo\'lmaydi!')">
+                                <i class="bi bi-send"></i> Yuborish
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline-item {
+    padding-left: 25px;
+    position: relative;
+}
+.timeline-item i {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    font-size: 10px;
+}
+</style>
+{% endblock %}

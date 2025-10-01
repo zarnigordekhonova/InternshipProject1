@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if object %}Arizani Tahrirlash{% else %}Yangi Ariza Berish{% endif %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .main-card {
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: white;
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .card-header-custom h2 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        /* Section Styling */
+        .form-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        /* Modern Input Styling */
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        /* Branch Card Styling */
+        .branch-form-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .branch-form-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Requirements Box */
+        .requirements-box {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0e7ff 100%);
+            border-left: 5px solid #667eea;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        .requirements-box h6 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .requirements-box ul {
+            margin: 0;
+            padding-left: 25px;
+        }
+        .requirements-box li {
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .requirements-box.empty {
+            background: #f8f9fa;
+            border-left-color: #6c757d;
+        }
+        
+        /* Checkbox Styling */
+        .checkbox-group {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+        .checkbox-group label {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8f9fa;
+        }
+        .checkbox-group label:hover:not(.disabled-checkbox) {
+            background: #e7f3ff;
+            transform: translateX(5px);
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        .checkbox-group-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px;
+        }
+        
+        /* Disabled checkbox styling */
+        .disabled-checkbox {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            background: #e9ecef !important;
+        }
+        .disabled-checkbox input[type="checkbox"] {
+            cursor: not-allowed;
+        }
+        
+        /* Button Styling */
+        .btn {
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-warning {
+            background: #ffc107;
+            border: none;
+            color: #000;
+        }
+        .btn-warning:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+        }
+        
+        .required-indicator {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .formset-delete-checkbox-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <div class="main-card">
+            <div class="card-header-custom">
+                <h2>
+                    {% if object %}
+                        Arizani Tahrirlash (№: {{ object.registration_number }})
+                    {% else %}
+                        Yangi Ariza Berish
+                    {% endif %}
+                </h2>
+            </div>
+
+            <div class="p-4">
+                <form method="post" enctype="multipart/form-data" id="main-form">
+                    {% csrf_token %}
+
+                    <!-- Section 1: Applicant Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="fas fa-user-circle me-2"></i>1. Ariza Beruvchi Ma'lumotlari
+                        </h4>
+                        <div class="row g-4">
+                            {% for field in form %}
+                                {% if field.name not in "user,status,registration_number,created_at,updated_at" %}
+                                    <div class="col-md-6">
+                                        <label for="{{ field.id_for_label }}" class="form-label">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="required-indicator">*</span>{% endif %}
+                                        </label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <div class="form-text">{{ field.help_text }}</div>
+                                        {% endif %}
+                                        {% for error in field.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Branch Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="fas fa-hospital me-2"></i>2. Filial Ma'lumotlari va Talablar
+                        </h4>
+                        <div id="branch-formset-container">
+                            {{ branch_formset.management_form }}
+
+                            {% for branch_form in branch_formset %}
+                                <div class="branch-form-card" id="branch-form-{{ forloop.counter0 }}" data-form-index="{{ forloop.counter0 }}">
+                                    {% for hidden in branch_form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h5 class="text-secondary mb-0">
+                                            <i class="fas fa-building me-2"></i>Filial #{{ forloop.counter }}
+                                        </h5>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-branch-button" 
+                                            data-form-id="branch-form-{{ forloop.counter0 }}"
+                                            style = "{% if branch_formset|length == 1 %}display:none;{% endif %}">
+                                            <i class="fas fa-trash me-1"></i> O'chirish
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <!-- Branch Selection -->
+                                        <div class="col-md-12">
+                                            <label for="{{ branch_form.branch.id_for_label }}" class="form-label">
+                                                <i class="fas fa-map-marker-alt me-2"></i>{{ branch_form.branch.label }} 
+                                                <span class="required-indicator">*</span>
+                                            </label>
+                                            {{ branch_form.branch }}
+                                            <div class="form-text">Avval filial tanlang, keyin ixtisosliklar ochiladi</div>
+                                            {% for error in branch_form.branch.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+
+                                        <!-- Specialties -->
+                                        <div class="col-md-12">
+                                            <label class="form-label">
+                                                <i class="fas fa-stethoscope me-2"></i>{{ branch_form.specialties.label }} 
+                                                <span class="required-indicator">*</span>
+                                            </label>
+                                            <div class="checkbox-group checkbox-group-compact" data-specialty-group="{{ forloop.counter0 }}">
+                                                {{ branch_form.specialties }}
+                                            </div>
+                                            <div class="form-text">(Bir yoki bir nechta ixtisoslik tanlang)</div>
+                                            {% for error in branch_form.specialties.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+
+                                        <!-- Requirements Info -->
+                                        <div class="col-md-12">
+                                            <div class="requirements-box empty" id="specialist-requirements-{{ forloop.counter0 }}">
+                                                <h6>📋 Minimal talab qilinadigan mutaxassislar:</h6>
+                                                <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                                            </div>
+
+                                            <div class="requirements-box empty" id="equipment-requirements-{{ forloop.counter0 }}">
+                                                <h6>🔧 Minimal talab qilinadigan jihozlar:</h6>
+                                                <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Specialists -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">
+                                                <i class="fas fa-user-md me-2"></i>{{ branch_form.selected_specialists.label }} 
+                                                <span class="required-indicator">*</span>
+                                            </label>
+                                            <div class="checkbox-group" id="specialists-group-{{ forloop.counter0 }}">
+                                                {{ branch_form.selected_specialists }}
+                                            </div>
+                                            <div class="form-text">Yuqoridagi minimal talablardan tanlang</div>
+                                            {% for error in branch_form.selected_specialists.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+
+                                        <!-- Equipment -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">
+                                                <i class="fas fa-tools me-2"></i>{{ branch_form.selected_equipment.label }} 
+                                                <span class="required-indicator">*</span>
+                                            </label>
+                                            <div class="checkbox-group" id="equipment-group-{{ forloop.counter0 }}">
+                                                {{ branch_form.selected_equipment }}
+                                            </div>
+                                            <div class="form-text">Yuqoridagi minimal talablardan tanlang</div>
+                                            {% for error in branch_form.selected_equipment.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    {% if branch_formset.can_delete %}
+                                        <div class="formset-delete-checkbox-container">
+                                            {{ branch_form.DELETE }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        {% if object %}
+                            <a href="{% url 'applications:application_create' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-plus me-2"></i>Yangi Ariza
+                            </a>
+                        {% endif %}
+                        <button type="submit" name="save_draft" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>Qoralama Sifatida Saqlash
+                        </button>
+                        <button type="submit" name="send_application" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-2"></i>Arizani Yuborish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const formsetContainer = $('#branch-formset-container');
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Disable/Enable specialty checkboxes based on branch selection
+            function toggleSpecialtyAccess(formIndex) {
+                const formElement = $(`#branch-form-${formIndex}`);
+                const prefix = formElement.find('input[name$=form_prefix]').val();
+                const branchSelect = formElement.find(`select[name="${prefix}-branch"]`);
+                const specialtyCheckboxes = formElement.find(`input[name="${prefix}-specialties"]`);
+                
+                if (branchSelect.val()) {
+                    specialtyCheckboxes.prop('disabled', false);
+                    specialtyCheckboxes.closest('label').removeClass('disabled-checkbox');
+                } else {
+                    specialtyCheckboxes.prop('disabled', true).prop('checked', false);
+                    specialtyCheckboxes.closest('label').addClass('disabled-checkbox');
+                    toggleSpecialistsEquipmentAccess(formIndex);
+                    
+                    $(`#specialist-requirements-${formIndex}`).addClass('empty').html(`
+                        <h6>📋 Minimal talab qilinadigan mutaxassislar:</h6>
+                        <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                    `);
+                    $(`#equipment-requirements-${formIndex}`).addClass('empty').html(`
+                        <h6>🔧 Minimal talab qilinadigan jihozlar:</h6>
+                        <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                    `);
+                }
+            }
+
+            // Disable/Enable specialists and equipment based on specialty selection
+            function toggleSpecialistsEquipmentAccess(formIndex) {
+                const formElement = $(`#branch-form-${formIndex}`);
+                const prefix = formElement.find('input[name$=form_prefix]').val();
+                const specialtyCheckboxes = formElement.find(`input[name="${prefix}-specialties"]:checked`);
+                
+                const specialistCheckboxes = formElement.find(`input[name="${prefix}-selected_specialists"]`);
+                const equipmentCheckboxes = formElement.find(`input[name="${prefix}-selected_equipment"]`);
+                
+                if (specialtyCheckboxes.length > 0) {
+                    specialistCheckboxes.prop('disabled', false);
+                    specialistCheckboxes.closest('label').removeClass('disabled-checkbox');
+                    
+                    equipmentCheckboxes.prop('disabled', false);
+                    equipmentCheckboxes.closest('label').removeClass('disabled-checkbox');
+                } else {
+                    specialistCheckboxes.prop('disabled', true).prop('checked', false);
+                    specialistCheckboxes.closest('label').addClass('disabled-checkbox');
+                    
+                    equipmentCheckboxes.prop('disabled', true).prop('checked', false);
+                    equipmentCheckboxes.closest('label').addClass('disabled-checkbox');
+                }
+            }
+
+            function updateRequirementsDisplay(formIndex) {
+                const formElement = $(`#branch-form-${formIndex}`);
+                const prefix = formElement.find('input[name$=form_prefix]').val();
+                
+                const selectedSpecialtyIds = [];
+                formElement.find(`input[name="${prefix}-specialties"]:checked`).each(function() {
+                    selectedSpecialtyIds.push($(this).val());
+                });
+                
+                const specialistReqBox = $(`#specialist-requirements-${formIndex}`);
+                const equipmentReqBox = $(`#equipment-requirements-${formIndex}`);
+                
+                if (selectedSpecialtyIds.length === 0) {
+                    specialistReqBox.addClass('empty').html(`
+                        <h6>📋 Minimal talab qilinadigan mutaxassislar:</h6>
+                        <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                    `);
+                    equipmentReqBox.addClass('empty').html(`
+                        <h6>🔧 Minimal talab qilinadigan jihozlar:</h6>
+                        <p class="mb-0 text-muted">Ixtisoslik turini tanlagandan so'ng bu yerda minimal talablar ko'rsatiladi</p>
+                    `);
+                    return;
+                }
+
+                $.ajax({
+                    url: "{% url 'applications:get_requirements' %}",
+                    type: 'POST',
+                    headers: {'X-CSRFToken': getCookie('csrftoken')},
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ specialty_ids: selectedSpecialtyIds }),
+                    success: function(response) {
+                        const specialists = response.specialists;
+                        const equipment = response.equipment;
+                        
+                        if (specialists.length > 0) {
+                            let specialistHTML = '<h6>📋 Minimal talab qilinadigan mutaxassislar:</h6><ul>';
+                            specialists.forEach(function(spec) {
+                                specialistHTML += `<li><strong>${spec.min_count} ta</strong> ${spec.title}</li>`;
+                            });
+                            specialistHTML += '</ul>';
+                            specialistReqBox.removeClass('empty').html(specialistHTML);
+                        } else {
+                            specialistReqBox.addClass('empty').html(`
+                                <h6>📋 Minimal talab qilinadigan mutaxassislar:</h6>
+                                <p class="mb-0 text-muted">Bu ixtisoslik uchun minimal mutaxassis talabi yo'q</p>
+                            `);
+                        }
+                        
+                        if (equipment.length > 0) {
+                            let equipmentHTML = '<h6>🔧 Minimal talab qilinadigan jihozlar:</h6><ul>';
+                            equipment.forEach(function(eq) {
+                                equipmentHTML += `<li><strong>${eq.min_count} ta</strong> ${eq.name}</li>`;
+                            });
+                            equipmentHTML += '</ul>';
+                            equipmentReqBox.removeClass('empty').html(equipmentHTML);
+                        } else {
+                            equipmentReqBox.addClass('empty').html(`
+                                <h6>🔧 Minimal talab qilinadigan jihozlar:</h6>
+                                <p class="mb-0 text-muted">Bu ixtisoslik uchun minimal jihoz talabi yo'q</p>
+                            `);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error);
+                        specialistReqBox.addClass('empty').html(`
+                            <h6>📋 Minimal talab qilinadigan mutaxassislar:</h6>
+                            <p class="mb-0 text-danger">Xato: Ma'lumotlarni yuklashda muammo</p>
+                        `);
+                        equipmentReqBox.addClass('empty').html(`
+                            <h6>🔧 Minimal talab qilinadigan jihozlar:</h6>
+                            <p class="mb-0 text-danger">Xato: Ma'lumotlarni yuklashda muammo</p>
+                        `);
+                    }
+                });
+            }
+
+            function setupListeners(formElement) {
+                const formIndex = formElement.data('form-index');
+                const prefix = formElement.find('input[name$=form_prefix]').val();
+                
+                if (!prefix) return;
+
+                // Listen to branch selection changes
+                formElement.find(`select[name="${prefix}-branch"]`).on('change', function() {
+                    toggleSpecialtyAccess(formIndex);
+                });
+
+                // Listen to specialty checkbox changes
+                formElement.find(`input[name="${prefix}-specialties"]`).on('change', function() {
+                    toggleSpecialistsEquipmentAccess(formIndex);
+                    updateRequirementsDisplay(formIndex);
+                });
+                
+                // Initialize state on page load
+                toggleSpecialtyAccess(formIndex);
+                toggleSpecialistsEquipmentAccess(formIndex);
+                
+                if (formElement.find(`input[name="${prefix}-specialties"]:checked`).length > 0) {
+                    updateRequirementsDisplay(formIndex);
+                }
+            }
+
+            // Initialize all branch forms
+            $('.branch-form-card').each(function() {
+                setupListeners($(this));
+            });
+
+            // Remove Branch Button Logic
+            function updateRemoveButtons() {
+                const visibleForms = formsetContainer.find('.branch-form-card:not(.d-none)').length;
+                if (visibleForms <= 1) {
+                    formsetContainer.find('.remove-branch-button').hide();
+                } else {
+                    formsetContainer.find('.remove-branch-button').show();
+                }
+            }
+            updateRemoveButtons();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home | ProjectName</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- VARIABLES & UTILITIES --- */
+    :root {
+        --color-primary: #007BFF;
+        --color-accent: #28A745; /* Success Green for CTA */
+        --color-bg-light: #f4f6f8;
+        --color-text-dark: #333;
+        --color-text-muted: #6c757d;
+        --color-shadow-light: rgba(0,0,0,0.08);
+        --color-shadow-medium: rgba(0,0,0,0.15);
+    }
+
+    /* --- GENERAL STYLES --- */
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        margin: 0; 
+        background: var(--color-bg-light); 
+        color: var(--color-text-dark);
+    }
+    
+    /* --- HEADER & NAVIGATION --- */
+    header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 1rem 3rem; /* Increased padding */
+        background: #fff; 
+        box-shadow: 0 4px 12px var(--color-shadow-light); /* Deeper shadow */
+    }
+    .logo { 
+        font-weight: 700; /* Bolder logo */
+        font-size: 1.6rem; 
+        color: var(--color-primary); 
+    }
+    nav a, nav button { 
+        margin-left: 1.2rem; 
+        text-decoration: none; 
+        color: var(--color-text-dark); 
+        transition: color 0.3s; 
+        font-weight: 500;
+        /* Styling for the logout button */
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    nav a:hover, nav button:hover { 
+        color: var(--color-primary); 
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+        text-align: center; 
+        padding: 6rem 2rem; /* More vertical space */
+        background: linear-gradient(120deg, #89f7fe, #66a6ff); 
+        color: #fff; 
+        position: relative;
+        overflow: hidden;
+    }
+    .hero h1 { 
+        font-size: 3.5rem; 
+        margin-bottom: 0.5rem; 
+        font-weight: 700;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    .hero p { 
+        font-size: 1.3rem; 
+        opacity: 0.95; 
+        margin-bottom: 2rem;
+    }
+    
+    /* --- BUTTON STYLING (User-Friendly CTA) --- */
+    .btn-cta {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: var(--color-accent); /* Use green for action */
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: background-color 0.3s, transform 0.2s;
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+    .btn-cta:hover {
+        background-color: #1e7e34;
+        transform: translateY(-2px);
+    }
+    
+    /* --- APPLICATION SECTION --- */
+    .applications { 
+        padding: 4rem 3rem; 
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .applications h2 { 
+        text-align: center; 
+        margin-bottom: 3rem; 
+        color: var(--color-text-dark); 
+        font-size: 2rem;
+        font-weight: 600;
+    }
+    .card-container { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Wider minimum cards */
+        gap: 2rem; 
+    }
+    .app-card { 
+        background: #fff; 
+        padding: 2rem; 
+        border-radius: 12px; 
+        box-shadow: 0 6px 15px var(--color-shadow-light); 
+        transition: transform 0.3s, box-shadow 0.3s; 
+        text-align: left; /* Aligned text for better readability */
+        border-left: 5px solid; /* For status color */
+    }
+    .app-card:hover { 
+        transform: translateY(-5px); /* Lift up slightly */
+        box-shadow: 0 10px 20px var(--color-shadow-medium);
+    }
+    .app-card h3 { 
+        margin-bottom: 0.2rem; 
+        color: var(--color-text-dark); 
+        font-weight: 600;
+    }
+    .app-card p { 
+        margin: 0.4rem 0; 
+        font-size: 0.95rem;
+        color: var(--color-text-muted);
+    }
+    .app-card a {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--color-primary);
+        font-weight: 500;
+    }
+    
+    /* Status Coloring (User-Friendly Visual Cues) */
+    .status-draft { border-left-color: #ffc107; } /* Yellow */
+    .status-approved { border-left-color: var(--color-accent); } /* Green */
+    .status-pending { border-left-color: #007BFF; } /* Blue */
+    .status-rejected { border-left-color: #dc3545; } /* Red */
+    
+    /* --- FOOTER --- */
+    footer { 
+        text-align: center; 
+        padding: 1.5rem; 
+        background: #fff; 
+        margin-top: 2rem; 
+        color: var(--color-text-muted); 
+        font-size: 0.9rem; 
+        border-top: 1px solid #e9ecef;
+    }
+
+    /* --- RESPONSIVENESS --- */
+    @media (max-width: 768px) {
+        header { padding: 1rem 1.5rem; }
+        .hero { padding: 4rem 1rem; }
+        .hero h1 { font-size: 2.5rem; }
+        .applications { padding: 2rem 1.5rem; }
+        nav { flex-direction: column; align-items: flex-end; }
+        nav a, nav button { margin: 0.5rem 0 0.5rem 1rem; }
+    }
+
+    /* Particle Animations (Kept the original fun effect) */
+    .particle { position:absolute; width:10px; height:10px; background:rgba(255,255,255,0.6); border-radius:50%; animation:float 10s linear infinite; }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes float { 0% {transform:translateY(0) translateX(0);} 50% {transform:translateY(-50px) translateX(20px);} 100% {transform:translateY(0) translateX(0);} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">ProjectName</div>
+  <nav>
+    {% if user.is_authenticated %}
+      <a href="{% url 'applications:application_list' %}">Applications</a>
+      <a href="{% url 'users:profile' %}">Profile</a>
+      <form method="post" action="{% url 'users:logout' %}" style="display: inline;">
+          {% csrf_token %} 
+          <button type="submit">Logout</button>
+      </form>
+    {% else %}
+      <a href="{% url 'users:login' %}">Login</a>
+      <a href="{% url 'users:register' %}">Register</a>
+    {% endif %}
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>ProjectName</h1>
+  <p>Your streamlined portal for managing all institutional applications.</p>
+  
+  {% if user.is_authenticated %}
+
+  {% else %}
+    <a href="{% url 'users:register' %}" class="btn-cta">
+        Get Started Now
+    </a>
+  {% endif %}
+  
+  <div id="particles"></div>
+</section>
+
+{% if user.is_authenticated %}
+<section class="applications">
+  <h2>My Active Applications</h2>
+  <div class="card-container">
+    {% for app in applications %}
+        {% with status_class=app.status|lower %}
+        <div class="app-card status-{{ status_class }}">
+            <h3>{{ app.first_name }} {{ app.last_name }}</h3>
+            <p><strong>Status:</strong> <span style="font-weight:600;">{{ app.status|capfirst }}</span></p>
+            {% if app.registration_number %}
+              <p><strong>Registration #:</strong> {{ app.registration_number }}</p>
+            {% endif %}
+            <a href="{% url 'applications:application_detail' app.pk %}">
+                View Details &rarr;
+            </a>
+        </div>
+        {% endwith %} 
+    {% empty %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: #fff; border-radius: 8px;">
+        <p style="color: var(--color-text-dark); margin-bottom: 1rem;">
+            You don’t have any applications in progress.
+        </p>
+        <a href="{% url 'applications:application_create' %}" class="btn-cta" style="background: var(--color-primary); box-shadow: none;">
+            Start Your First Application
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<section style="text-align:center; padding:5rem 2rem;">
+  <h2>Simplify Your Process</h2>
+  <p style="max-width: 600px; margin: 1.5rem auto; font-size: 1.1rem; color: var(--color-text-muted);">
+    Create an account to track your submissions, save progress, and receive instant updates on your application status.
+  </p>
+</section>
+{% endif %}
+
+<footer>
+  <p>&copy; 2025 ProjectName. All rights reserved.</p>
+</footer>
+
+<script>
+const particlesContainer = document.getElementById('particles');
+for(let i=0;i<30;i++){
+  const p = document.createElement('div');
+  p.classList.add('particle');
+  p.style.top = Math.random() * 100 + '%';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.width = p.style.height = Math.random() * 8 + 4 + 'px';
+  p.style.animationDuration = (5 + Math.random()*10) + 's';
+  particlesContainer.appendChild(p);
+}
+</script>
+</body>
+</html>
