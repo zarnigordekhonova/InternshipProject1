@@ -105,7 +105,7 @@ class ApplicationCreateView(CreateView):
     model = Application
     form_class = ApplicationForm
     template_name = 'applications/application_form.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy("applications:application_list")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

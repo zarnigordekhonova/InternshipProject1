@@ -213,7 +213,7 @@
   <div id="particles"></div>
 </section>
 
-{% if user.is_authenticated %}
+<!-- {% if user.is_authenticated %}
 <section class="applications">
   <h2>My Active Applications</h2>
   <div class="card-container">
@@ -234,13 +234,13 @@
       <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: #fff; border-radius: 8px;">
         <p style="color: var(--color-text-dark); margin-bottom: 1rem;">
             You don’t have any applications in progress.
-        </p>
-        <a href="{% url 'applications:application_create' %}" class="btn-cta" style="background: var(--color-primary); box-shadow: none;">
-            Start Your First Application
-        </a>
-      </div>
+        </p> -->
+      <!-- </div>
     {% endfor %}
-  </div>
+  </div> -->
+        <a href="{% url 'applications:application_create' %}" class="btn-cta" style="background: var(--color-primary); box-shadow: none;">
+            Add new application
+        </a>
 </section>
 {% else %}
 <section style="text-align:center; padding:5rem 2rem;">

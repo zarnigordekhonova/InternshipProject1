@@ -24,15 +24,15 @@ class ApplicationListView(LoginRequiredMixin, ListView):
             'applicationbranch_set__selected_equipment'
         ).order_by('-created_at')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['total_applications'] = self.get_queryset().count()
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['total_applications'] = self.get_queryset().count()
         
-        queryset = self.get_queryset()
-        context['draft_count'] = queryset.filter(status=ApplicationStatus.DRAFT).count()
-        context['submitted_count'] = queryset.filter(status=ApplicationStatus.SUBMITTED).count()
-        context['pending_count'] = queryset.filter(status=ApplicationStatus.PENDING).count()
-        context['approved_count'] = queryset.filter(status=ApplicationStatus.APPROVED).count()
-        context['rejected_count'] = queryset.filter(status=ApplicationStatus.REJECTED).count()
+    #     queryset = self.get_queryset()
+    #     context['draft_count'] = queryset.filter(status=ApplicationStatus.DRAFT).count()
+    #     context['submitted_count'] = queryset.filter(status=ApplicationStatus.SUBMITTED).count()
+    #     context['pending_count'] = queryset.filter(status=ApplicationStatus.PENDING).count()
+    #     context['approved_count'] = queryset.filter(status=ApplicationStatus.APPROVED).count()
+    #     context['rejected_count'] = queryset.filter(status=ApplicationStatus.REJECTED).count()
         
-        return context
+    #     return context

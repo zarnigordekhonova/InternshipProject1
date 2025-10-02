@@ -68,6 +68,8 @@ class ApplicationBranchForm(forms.ModelForm):
     def _validate_specialist_requirements(self, specialties_qs, selected_specialists_qs):
         from apps.applications.models import SpecialistsRequired
         
+        errors = []
+        
         for specialty in specialties_qs:
             required_qs = SpecialistsRequired.objects.filter(specialty=specialty)
             
@@ -75,18 +77,20 @@ class ApplicationBranchForm(forms.ModelForm):
                 required_title = requirement.required_specialists.title
                 min_count = requirement.min_count
                 
+                # Count how many specialists of this type the user selected
                 selected_count = selected_specialists_qs.filter(title=required_title).count()
                 
                 if selected_count < min_count:
-                    raise ValidationError(
-                        _("%(specialty)s ixtisosligi uchun minimal talab qilingan mutaxassislar yetarli emas. \"%(title)s\" lavozimidan kamida %(min_count)s ta kiritilishi shart (Kiritilgani: %(selected_count)s).") % {
-                            'specialty': specialty.name,
-                            'title': required_title,
-                            'min_count': min_count,
-                            'selected_count': selected_count
-                        },
-                        code='insufficient_specialists'
+                    errors.append(
+                        f'"{specialty.name}" ixtisosligi uchun "{required_title}" lavozimidan '
+                        f'kamida {min_count} ta tanlash shart (Siz {selected_count} ta tanladingiz).'
                     )
+        
+        if errors:
+            raise ValidationError(
+                "Minimal talab qilinadigan mutaxassislarni to'liq tanlamadingiz:\n" + "\n".join(f"• {err}" for err in errors),
+                code='insufficient_specialists'
+            )
 
     def _validate_equipment_requirements(self, specialties_qs, selected_equipment_qs):
         from apps.applications.models import EquipmentRequired, EquipmentRequiredItem

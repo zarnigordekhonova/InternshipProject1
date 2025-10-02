@@ -1,12 +1,11 @@
-from django.views.generic import View
+from django.views.generic import DetailView
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.applications.models import Application, ApplicationBranch
 
 
-class ApplicationDetailView(LoginRequiredMixin, View):
-    """View application details (read-only)"""
+class ApplicationDetailView(LoginRequiredMixin, DetailView):
     template_name = 'applications/application_detail.html'
     
     def get(self, request, pk):

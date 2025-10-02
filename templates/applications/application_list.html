@@ -3,117 +3,41 @@
 
 {% block content %}
 <div class="container mt-4">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>{% translate "Arizalar Ro'yxati" %}</h2>
-        <a href="{% url 'applications:application_create' %}" class="btn btn-primary">
-            <i class="fas fa-plus-circle me-1"></i> {% translate "Yangi Ariza Berish" %}
+        <h2 class="fw-bold">{% translate "Arizalar Ro'yxati" %}</h2>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> {% translate "Orqaga" %}
         </a>
     </div>
 
-    <div class="row g-3 mb-4 text-center">
-        <div class="col-md-2">
-            <div class="card bg-light shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ total_applications }}</h5>
-                    <p class="card-text small text-muted">{% translate "Jami" %}</p>
+    {% if applications %}
+        <div class="row g-3">
+            {% for application in applications %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="fw-bold text-primary mb-2">
+                                {{ application.registration_number|default:_("Qoralama") }}
+                            </h5>
+                            <span class="badge {{ application.status }} px-3 py-2">
+                                {{ application.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{% url 'applications:application_detail' pk=application.pk %}" 
+                               class="btn btn-sm btn-outline-primary w-100">
+                                {% translate "Detail ⇒" %}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <div class="col-md-2">
-            <div class="card bg-warning-subtle shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ draft_count }}</h5>
-                    <p class="card-text small text-muted">{% translate "Qoralama" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-primary-subtle shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ submitted_count }}</h5>
-                    <p class="card-text small text-muted">{% translate "Yuborilgan" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-info-subtle shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ pending_count }}</h5>
-                    <p class="card-text small text-muted">{% translate "Ko'rib chiqilmoqda" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-success-subtle shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ approved_count }}</h5>
-                    <p class="card-text small text-muted">{% translate "Tasdiqlangan" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card bg-danger-subtle shadow-sm">
-                <div class="card-body p-2">
-                    <h5 class="card-title mb-0">{{ rejected_count }}</h5>
-                    <p class="card-text small text-muted">{% translate "Rad etilgan" %}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            {% if applications %}
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width: 15%;">{% translate "Ro'yxat raqami" %}</th>
-                            <th scope="col" style="width: 20%;">{% translate "Holati" %}</th>
-                            <th scope="col" style="width: 25%;">{% translate "Yaratilgan sana" %}</th>
-                            <th scope="col" style="width: 20%;">{% translate "Harakatlar" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for application in applications %}
-                        <tr>
-                            <td>
-                                <strong>{{ application.registration_number|default:_("Qoralama") }}</strong>
-                            </td>
-                            <td>
-                                <span class="badge {{ application.status }} fw-normal">
-                                    {{ application.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <small>{{ application.created_at|date:"Y-m-d H:i" }}</small>
-                            </td>
-                            <td>
-                                {# Eslatma: 'applications:application-detail' sizning urlpatterns'ingizda mavjud bo'lishi kerak #}
-                                <a href="{% url 'applications:application_detail' pk=application.pk %}" class="btn btn-sm btn-info me-2">
-                                    <i class="fas fa-eye me-1"></i> {% translate "Batafsil" %}
-                                </a>
-                                {% if application.status == 'draft' %}
-                                {# Eslatma: 'applications:application-update' ham mavjud bo'lishi kerak #}
-                                <a href="{% url 'applications:application-update' pk=application.pk %}" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit me-1"></i> {% translate "Tahrirlash" %}
-                                </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="alert alert-info m-3" role="alert">
-                {% translate "Siz hali hech qanday ariza bermagansiz." %}
-            </div>
-            {% endif %}
-        </div>
-    </div>
 
-    {% if is_paginated %}
+        {% if is_paginated %}
         <nav aria-label="Arizalar sahifalari" class="mt-4">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
@@ -141,17 +65,12 @@
                 {% endif %}
             </ul>
         </nav>
-    {% endif %}
+        {% endif %}
 
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            {% translate "Siz hali hech qanday ariza bermagansiz." %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
-
-{# Eslatma: status_class filtrini yaratish kerak. Mana misol: #}
-{# custom_filters.py da: #}
-{# @register.filter #}
-{# def status_class(value): #}
-{#     if value == 'draft': return 'bg-warning text-dark' #}
-{#     if value == 'submitted': return 'bg-primary' #}
-{#     if value == 'approved': return 'bg-success' #}
-{#     if value == 'rejected': return 'bg-danger' #}
-{#     return 'bg-secondary' #}
